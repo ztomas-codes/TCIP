@@ -13,19 +13,22 @@ namespace Server
         static void Main(string[] args)
         {
             TcpListener server = new TcpListener(IPAddress.Any, 9999);
-            // we set our IP address as server's address, and we also set the port: 9999
-
-            server.Start();  // this will start the server
+            server.Start();
             while (true)
             {
-                Console.WriteLine("Connected");
-                TcpClient _client = server.AcceptTcpClient();
-                using (NetworkStream stream = _client.GetStream())
-                {
-                    byte[] msg = new byte[256];
-                    int bytes = stream.Read(msg, 0, msg.Length);
-                    Console.WriteLine(Encoding.ASCII.GetString(msg));
-                }
+                TcpClient client = server.AcceptTcpClient();
+                new Client(client);
+            }
+
+        }
+
+        public static void Broadcast(string msg)
+        {
+            foreach(Client client in Client.clients)
+            {
+                byte[] bytes = Encoding.ASCII.GetBytes(msg);
+
+                client.TcpClient.GetStream().Write(bytes, 0, bytes.Length);
             }
         }
     }

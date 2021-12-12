@@ -17,6 +17,8 @@ namespace Client
 
         public User(string name)
         {
+            _client = new TcpClient("127.0.0.1", 9999);
+            _stream = _client.GetStream();
             this.Name = name;
             Send("Connected");
         }
@@ -25,15 +27,13 @@ namespace Client
         public void Send(string message)
         {
             string data = string.Empty;
-            data = $"{Name} {message}";
+            data = $"[{Name}]: {message}";
             WriteMessage(data);
         }
 
         private void WriteMessage(string message)
         {
 
-            _client = new TcpClient("127.0.0.1", 9999);
-            _stream = _client.GetStream();
             byte[] msg = Encoding.ASCII.GetBytes(message);
             _stream.Write(msg, 0, msg.Length);
         }
